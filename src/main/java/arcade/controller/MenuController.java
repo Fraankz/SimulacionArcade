@@ -42,10 +42,23 @@ public class MenuController {
     private void onGameSelected(String gameType) {
         try {
             Game game = GameFactory.createGame(gameType);
-            JOptionPane.showMessageDialog(null, "Juego creado: " + game.getClass().getSimpleName());
-            // Luego abriríamos la vista correspondiente aquí
+
+            switch (gameType) {
+                case "nqueens":
+                    arcade.view.NQueensView nQueensView = new arcade.view.NQueensView();
+                    nQueensView.show();
+                    break;
+                case "knighttour":
+                    JOptionPane.showMessageDialog(null, "Knight's Tour aún no implementado.");
+                    break;
+                case "hanoi":
+                    JOptionPane.showMessageDialog(null, "Torres de Hanoi aún no implementado.");
+                    break;
+            }
+
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(null, "Error al crear el juego: " + ex.getMessage());
         }
     }
+
 }
