@@ -3,19 +3,38 @@ package arcade.model.nqueens;
 import arcade.model.game.Game;
 
 public class NQueensGame implements Game {
+    private int[][] board;
+    private int size;
+
+    public NQueensGame() {
+    }
+
+    public void initialize(int n) {
+        size = n;
+        board = new int[n][n];
+    }
+
     @Override
     public void initialize() {
-        // Inicializar tablero
+        // No usado directamente aquí
     }
 
     @Override
     public boolean solve() {
-        // Resolver N reinas
-        return false;
+        NQueensSolver solver = new NQueensSolver();
+        return solver.solve(board, 0, size);
     }
 
     @Override
     public void reset() {
-        // Reiniciar juego
+        initialize(size);
+    }
+
+    public int[][] getBoard() {
+        return board;
+    }
+
+    public int getSize() {
+        return size;
     }
 }

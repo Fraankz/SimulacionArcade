@@ -45,7 +45,9 @@ public class MenuController {
 
             switch (gameType) {
                 case "nqueens":
+                    arcade.model.nqueens.NQueensGame nQueensGame = (arcade.model.nqueens.NQueensGame) game;
                     arcade.view.NQueensView nQueensView = new arcade.view.NQueensView();
+                    new arcade.controller.NQueensController(nQueensView, nQueensGame);
                     nQueensView.show();
                     break;
                 case "knighttour":
@@ -60,5 +62,6 @@ public class MenuController {
             JOptionPane.showMessageDialog(null, "Error al crear el juego: " + ex.getMessage());
         }
     }
+
 
 }
