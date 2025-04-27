@@ -1,5 +1,7 @@
 package arcade.controller;
 
+import arcade.factory.GameFactory;
+import arcade.model.game.Game;
 import arcade.view.MenuView;
 
 import javax.swing.*;
@@ -15,39 +17,35 @@ public class MenuController {
     }
 
     private void initController() {
-        // Asignar acciones a cada botón
         menuView.getNQueensButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onNQueensSelected();
+                onGameSelected("nqueens");
             }
         });
 
         menuView.getKnightTourButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onKnightTourSelected();
+                onGameSelected("knighttour");
             }
         });
 
         menuView.getHanoiButton().addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                onHanoiSelected();
+                onGameSelected("hanoi");
             }
         });
     }
 
-    private void onNQueensSelected() {
-        JOptionPane.showMessageDialog(null, "Has seleccionado el Problema de N Reinas");
-        // Aquí luego se llamará a GameFactory para lanzar el juego
-    }
-
-    private void onKnightTourSelected() {
-        JOptionPane.showMessageDialog(null, "Has seleccionado el Recorrido del Caballo");
-    }
-
-    private void onHanoiSelected() {
-        JOptionPane.showMessageDialog(null, "Has seleccionado las Torres de Hanói");
+    private void onGameSelected(String gameType) {
+        try {
+            Game game = GameFactory.createGame(gameType);
+            JOptionPane.showMessageDialog(null, "Juego creado: " + game.getClass().getSimpleName());
+            // Luego abriríamos la vista correspondiente aquí
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(null, "Error al crear el juego: " + ex.getMessage());
+        }
     }
 }
