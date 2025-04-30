@@ -3,22 +3,28 @@ package arcade.view;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class HanoiView {
     private final JFrame frame;
     private final JTextField diskField;
     private final JButton resetButton;
+
+    private final JLayeredPane layeredPane;
     private final JPanel[] towerPanels;
     private final JLabel moveCounterLabel;
 
+    public static final int PANEL_WIDTH = 800;
+    public static final int PANEL_HEIGHT = 600;
+    public static final int TOWER_WIDTH = 200;
+    public static final int TOWER_HEIGHT = 400;
+
     public HanoiView() {
-        frame = new JFrame("Torres de Hanoi");
+        frame = new JFrame("Torres de Hanoi - Drag & Drop");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(800, 600);
+        frame.setSize(PANEL_WIDTH, PANEL_HEIGHT);
         frame.setLayout(new BorderLayout());
 
-        // Panel superior
+        // Panel superior (entrada y reset)
         JPanel topPanel = new JPanel();
         topPanel.add(new JLabel("Número de discos (1–8):"));
         diskField = new JTextField(5);
@@ -27,17 +33,28 @@ public class HanoiView {
         topPanel.add(resetButton);
         frame.add(topPanel, BorderLayout.NORTH);
 
-        // Panel de torres
-        JPanel centerPanel = new JPanel(new GridLayout(1, 3, 20, 0));
+        // Lienzo visual principal
+        layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(PANEL_WIDTH, TOWER_HEIGHT));
+        layeredPane.setLayout(null);
+
         towerPanels = new JPanel[3];
         for (int i = 0; i < 3; i++) {
             towerPanels[i] = new JPanel();
             towerPanels[i].setLayout(new BoxLayout(towerPanels[i], BoxLayout.Y_AXIS));
-            towerPanels[i].setBackground(Color.WHITE);
-            towerPanels[i].setBorder(BorderFactory.createTitledBorder("Torre " + (char) ('A' + i)));
-            centerPanel.add(towerPanels[i]);
+            towerPanels[i].setOpaque(false);
+            towerPanels[i].setBounds(i * TOWER_WIDTH + 50, 50, TOWER_WIDTH - 100, TOWER_HEIGHT - 100);
+            layeredPane.add(towerPanels[i], JLayeredPane.DEFAULT_LAYER);
+
+            // Pilar de torre (visual)
+            JLabel pillar = new JLabel();
+            pillar.setOpaque(true);
+            pillar.setBackground(Color.GRAY);
+            pillar.setBounds(i * TOWER_WIDTH + 140, 50, 10, TOWER_HEIGHT - 100);
+            layeredPane.add(pillar, JLayeredPane.DEFAULT_LAYER);
         }
-        frame.add(centerPanel, BorderLayout.CENTER);
+
+        frame.add(layeredPane, BorderLayout.CENTER);
 
         // Contador de movimientos
         moveCounterLabel = new JLabel("Movimientos: 0", SwingConstants.CENTER);
@@ -45,39 +62,9 @@ public class HanoiView {
         frame.add(moveCounterLabel, BorderLayout.SOUTH);
     }
 
+    // Mostrar ventana
     public void show() {
         frame.setVisible(true);
-    }
-
-    public void updateTowers(Stack<Integer>[] towers, int moveCount, boolean victory) {
-        for (int i = 0; i < 3; i++) {
-            JPanel panel = towerPanels[i];
-            panel.removeAll();
-            panel.add(Box.createVerticalGlue());
-
-            List<Integer> disks = new ArrayList<>(towers[i]);
-            Collections.reverse(disks);
-            for (int disk : disks) {
-                JLabel label = new JLabel("■".repeat(disk), SwingConstants.CENTER);
-                label.setFont(new Font("Monospaced", Font.BOLD, 12 + disk * 2));
-                label.setForeground(new Color(30, 100 + disk * 10, 200));
-                label.setAlignmentX(Component.CENTER_ALIGNMENT);
-                panel.add(label);
-            }
-
-            panel.add(Box.createVerticalGlue());
-            panel.revalidate();
-            panel.repaint();
-        }
-        moveCounterLabel.setText("Movimientos: " + moveCount);
-    }
-
-    public void highlightTower(int index, boolean highlight) {
-        if (highlight) {
-            towerPanels[index].setBorder(BorderFactory.createLineBorder(Color.RED, 3));
-        } else {
-            towerPanels[index].setBorder(BorderFactory.createTitledBorder("Torre " + (char) ('A' + index)));
-        }
     }
 
     // Getters
@@ -95,6 +82,10 @@ public class HanoiView {
 
     public JPanel[] getTowerPanels() {
         return towerPanels;
+    }
+
+    public JLayeredPane getLayeredPane() {
+        return layeredPane;
     }
 
     public void updateMoveCount(int count) {
