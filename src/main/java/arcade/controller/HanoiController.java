@@ -18,12 +18,12 @@ public class HanoiController {
     private void initController() {
         view.getResetButton().addActionListener(e -> resetGame());
 
-        view.getMoveAtoB().addActionListener(e -> makeMove('A', 'B'));
-        view.getMoveAtoC().addActionListener(e -> makeMove('A', 'C'));
-        view.getMoveBtoA().addActionListener(e -> makeMove('B', 'A'));
-        view.getMoveBtoC().addActionListener(e -> makeMove('B', 'C'));
-        view.getMoveCtoA().addActionListener(e -> makeMove('C', 'A'));
-        view.getMoveCtoB().addActionListener(e -> makeMove('C', 'B'));
+        view.getMoveButtons()[0].addActionListener(e -> tryMove(0, 1)); // A→B
+        view.getMoveButtons()[1].addActionListener(e -> tryMove(0, 2)); // A→C
+        view.getMoveButtons()[2].addActionListener(e -> tryMove(1, 0)); // B→A
+        view.getMoveButtons()[3].addActionListener(e -> tryMove(1, 2)); // B→C
+        view.getMoveButtons()[4].addActionListener(e -> tryMove(2, 0)); // C→A
+        view.getMoveButtons()[5].addActionListener(e -> tryMove(2, 1)); // C→B
     }
 
     private void resetGame() {
@@ -32,17 +32,21 @@ public class HanoiController {
             if (disks < 1 || disks > 8) throw new NumberFormatException();
 
             game.reset(disks);
-            view.getOutputArea().setText("Juego reiniciado con " + disks + " discos.\n\n" + game.getState());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(view.getFrame(), "Introduce un número entre 1 y 8.");
+            view.updateTowers(game.getTowers(), game.getMoveCount(), false);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(view.getFrame(), "Introduce un número de discos entre 1 y 8.");
         }
     }
 
-    private void makeMove(char from, char to) {
+    private void tryMove(int from, int to) {
         if (game.move(from, to)) {
-            view.getOutputArea().setText(game.getState());
+            boolean win = game.isVictory();
+            view.updateTowers(game.getTowers(), game.getMoveCount(), win);
+            if (win) {
+                JOptionPane.showMessageDialog(view.getFrame(), "¡Has ganado en " + game.getMoveCount() + " movimientos!");
+            }
         } else {
-            JOptionPane.showMessageDialog(view.getFrame(), "Movimiento inválido. Recuerda: no puedes colocar un disco más grande sobre uno más pequeño.");
+            JOptionPane.showMessageDialog(view.getFrame(), "Movimiento inválido.");
         }
     }
 }

@@ -2,70 +2,61 @@ package arcade.model.hanoi;
 
 import arcade.model.game.Game;
 
-import java.util.Stack;
+import java.util.*;
 
 public class HanoiGame implements Game {
     private Stack<Integer>[] towers;
     private int numDisks;
+    private int moveCount;
 
     @SuppressWarnings("unchecked")
     public void reset(int numDisks) {
         this.numDisks = numDisks;
+        this.moveCount = 0;
+
         towers = new Stack[3];
-        for (int i = 0; i < 3; i++) {
-            towers[i] = new Stack<>();
-        }
-        for (int i = numDisks; i >= 1; i--) {
-            towers[0].push(i); // todos los discos en la torre A
-        }
+        for (int i = 0; i < 3; i++) towers[i] = new Stack<>();
+
+        for (int i = numDisks; i >= 1; i--) towers[0].push(i);
     }
 
-    public boolean move(char from, char to) {
-        int fromIndex = towerIndex(from);
-        int toIndex = towerIndex(to);
+    public boolean move(int from, int to) {
+        if (from < 0 || from >= 3 || to < 0 || to >= 3) return false;
+        if (towers[from].isEmpty()) return false;
 
-        if (fromIndex == -1 || toIndex == -1 || towers[fromIndex].isEmpty()) return false;
+        int disk = towers[from].peek();
+        if (!towers[to].isEmpty() && towers[to].peek() < disk) return false;
 
-        int movingDisk = towers[fromIndex].peek();
-        if (!towers[toIndex].isEmpty() && towers[toIndex].peek() < movingDisk) return false;
-
-        towers[toIndex].push(towers[fromIndex].pop());
+        towers[to].push(towers[from].pop());
+        moveCount++;
         return true;
     }
 
-    private int towerIndex(char tower) {
-        switch (Character.toUpperCase(tower)) {
-            case 'A': return 0;
-            case 'B': return 1;
-            case 'C': return 2;
-            default: return -1;
-        }
+    public Stack<Integer>[] getTowers() {
+        return towers;
     }
 
-    public boolean isComplete() {
-        return towers[2].size() == numDisks;
+    public int getMoveCount() {
+        return moveCount;
     }
 
-    public String getState() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            sb.append("Torre ").append((char) ('A' + i)).append(": ");
-            for (int disk : towers[i]) {
-                sb.append(disk).append(" ");
-            }
-            sb.append("\n");
-        }
-        if (isComplete()) {
-            sb.append("🎉 ¡Has completado el juego!\n");
-        }
-        return sb.toString();
+    public boolean isVictory() {
+        return towers[0].isEmpty() && towers[1].isEmpty() && towers[2].size() == numDisks;
+    }
+
+    public int getNumDisks() {
+        return numDisks;
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+
+    }
 
     @Override
-    public boolean solve() { return false; }
+    public boolean solve() {
+        return false;
+    }
 
     @Override
     public void reset() {

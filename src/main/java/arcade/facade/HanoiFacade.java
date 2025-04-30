@@ -9,7 +9,7 @@ public class HanoiFacade {
         game = new HanoiGame();
     }
 
-    public boolean solveHanoi() {
-        return game.solve();
+    public HanoiGame getGame() {
+        return game;
     }
 }
