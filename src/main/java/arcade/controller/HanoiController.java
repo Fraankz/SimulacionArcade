@@ -4,10 +4,13 @@ import arcade.model.hanoi.HanoiGame;
 import arcade.view.HanoiView;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class HanoiController {
     private final HanoiView view;
     private final HanoiGame game;
+    private int selectedTower = -1;
 
     public HanoiController(HanoiView view, HanoiGame game) {
         this.view = view;
@@ -18,12 +21,12 @@ public class HanoiController {
     private void initController() {
         view.getResetButton().addActionListener(e -> resetGame());
 
-        view.getMoveButtons()[0].addActionListener(e -> tryMove(0, 1)); // A→B
-        view.getMoveButtons()[1].addActionListener(e -> tryMove(0, 2)); // A→C
-        view.getMoveButtons()[2].addActionListener(e -> tryMove(1, 0)); // B→A
-        view.getMoveButtons()[3].addActionListener(e -> tryMove(1, 2)); // B→C
-        view.getMoveButtons()[4].addActionListener(e -> tryMove(2, 0)); // C→A
-        view.getMoveButtons()[5].addActionListener(e -> tryMove(2, 1)); // C→B
+        // Listeners para cada torre
+        view.getTowerPanels()[0].addMouseListener(new TowerClickListener(0));
+        view.getTowerPanels()[1].addMouseListener(new TowerClickListener(1));
+        view.getTowerPanels()[2].addMouseListener(new TowerClickListener(2));
+
+        resetGame();
     }
 
     private void resetGame() {
@@ -32,6 +35,7 @@ public class HanoiController {
             if (disks < 1 || disks > 8) throw new NumberFormatException();
 
             game.reset(disks);
+            selectedTower = -1;
             view.updateTowers(game.getTowers(), game.getMoveCount(), false);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(view.getFrame(), "Introduce un número de discos entre 1 y 8.");
@@ -47,6 +51,26 @@ public class HanoiController {
             }
         } else {
             JOptionPane.showMessageDialog(view.getFrame(), "Movimiento inválido.");
+        }
+    }
+
+    private class TowerClickListener extends MouseAdapter {
+        private final int towerIndex;
+
+        public TowerClickListener(int towerIndex) {
+            this.towerIndex = towerIndex;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (selectedTower == -1) {
+                selectedTower = towerIndex;
+                view.highlightTower(towerIndex, true);
+            } else {
+                view.highlightTower(selectedTower, false);
+                tryMove(selectedTower, towerIndex);
+                selectedTower = -1;
+            }
         }
     }
 }

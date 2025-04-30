@@ -9,7 +9,6 @@ public class HanoiView {
     private final JFrame frame;
     private final JTextField diskField;
     private final JButton resetButton;
-    private final JButton[] moveButtons;
     private final JPanel[] towerPanels;
     private final JLabel moveCounterLabel;
 
@@ -19,7 +18,7 @@ public class HanoiView {
         frame.setSize(800, 600);
         frame.setLayout(new BorderLayout());
 
-        // Panel superior (entrada de discos y reinicio)
+        // Panel superior
         JPanel topPanel = new JPanel();
         topPanel.add(new JLabel("Número de discos (1–8):"));
         diskField = new JTextField(5);
@@ -28,7 +27,7 @@ public class HanoiView {
         topPanel.add(resetButton);
         frame.add(topPanel, BorderLayout.NORTH);
 
-        // Panel central (torres visuales)
+        // Panel de torres
         JPanel centerPanel = new JPanel(new GridLayout(1, 3, 20, 0));
         towerPanels = new JPanel[3];
         for (int i = 0; i < 3; i++) {
@@ -40,35 +39,16 @@ public class HanoiView {
         }
         frame.add(centerPanel, BorderLayout.CENTER);
 
-        // Panel inferior (botones de movimiento)
-        JPanel bottomPanel = new JPanel(new GridLayout(3, 2, 5, 5));
-        moveButtons = new JButton[6];
-        String[] labels = {
-                "Mover A → B", "Mover A → C",
-                "Mover B → A", "Mover B → C",
-                "Mover C → A", "Mover C → B"
-        };
-        for (int i = 0; i < 6; i++) {
-            moveButtons[i] = new JButton(labels[i]);
-            bottomPanel.add(moveButtons[i]);
-        }
-
         // Contador de movimientos
         moveCounterLabel = new JLabel("Movimientos: 0", SwingConstants.CENTER);
         moveCounterLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
-
-        JPanel southPanel = new JPanel(new BorderLayout());
-        southPanel.add(moveCounterLabel, BorderLayout.NORTH);
-        southPanel.add(bottomPanel, BorderLayout.CENTER);
-
-        frame.add(southPanel, BorderLayout.SOUTH);
+        frame.add(moveCounterLabel, BorderLayout.SOUTH);
     }
 
     public void show() {
         frame.setVisible(true);
     }
 
-    // Actualiza la vista gráfica de las torres
     public void updateTowers(Stack<Integer>[] towers, int moveCount, boolean victory) {
         for (int i = 0; i < 3; i++) {
             JPanel panel = towerPanels[i];
@@ -92,6 +72,14 @@ public class HanoiView {
         moveCounterLabel.setText("Movimientos: " + moveCount);
     }
 
+    public void highlightTower(int index, boolean highlight) {
+        if (highlight) {
+            towerPanels[index].setBorder(BorderFactory.createLineBorder(Color.RED, 3));
+        } else {
+            towerPanels[index].setBorder(BorderFactory.createTitledBorder("Torre " + (char) ('A' + index)));
+        }
+    }
+
     // Getters
     public JFrame getFrame() {
         return frame;
@@ -105,7 +93,11 @@ public class HanoiView {
         return resetButton;
     }
 
-    public JButton[] getMoveButtons() {
-        return moveButtons;
+    public JPanel[] getTowerPanels() {
+        return towerPanels;
+    }
+
+    public void updateMoveCount(int count) {
+        moveCounterLabel.setText("Movimientos: " + count);
     }
 }
